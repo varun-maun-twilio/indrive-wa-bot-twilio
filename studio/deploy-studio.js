@@ -45,6 +45,7 @@ async function deployStudio() {
         // 4. Read and Parse the Studio Flow template
         const templatePath = path.join(__dirname, 'flow-template.json');
         const flowJsonString = fs.readFileSync(templatePath, 'utf8');
+        console.log('flowJsonString', flowJsonString);
         const flowData = JSON.parse(flowJsonString);
 
         // 5. Traverse the Studio Flow states and update "run-function" widgets dynamically
@@ -79,7 +80,7 @@ async function deployStudio() {
         });
 
         // 6. Update and Publish the Studio Flow using the modified JSON object
-        console.log(`Deploying updates to Studio Flow: ${flowSid}`);
+        console.log(`Deploying updates to Studio Flow: ${flowSid}`,flowData);
         const flow = await client.studio.v2.flows(flowSid).update({
             status: 'published',
             commitMessage: `Automated deployment via GitHub Actions - ${new Date().toISOString()}`,
