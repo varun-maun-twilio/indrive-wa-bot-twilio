@@ -1,0 +1,634 @@
+{
+  "initial_state": "Trigger",
+  "flags": {
+    "allow_concurrent_calls": true
+  },
+  "description": "A New Flow",
+  "states": [
+    {
+      "name": "Trigger",
+      "type": "trigger",
+      "transitions": [
+        {
+          "next": "set_initial_variables",
+          "event": "incomingMessage"
+        },
+        {
+          "event": "incomingCall"
+        },
+        {
+          "event": "incomingConversationMessage"
+        },
+        {
+          "event": "incomingRequest"
+        },
+        {
+          "event": "incomingParent"
+        }
+      ],
+      "properties": {
+        "offset": {
+          "x": -45,
+          "y": -1597
+        }
+      }
+    },
+    {
+      "name": "greeting_confirmation",
+      "type": "send-and-wait-for-reply",
+      "transitions": [
+        {
+          "next": "check_consent",
+          "event": "incomingMessage"
+        },
+        {
+          "next": "persist_information_abandoned",
+          "event": "timeout"
+        },
+        {
+          "event": "deliveryFailure"
+        }
+      ],
+      "properties": {
+        "offset": {
+          "x": 40,
+          "y": -1228
+        },
+        "service": "{{trigger.message.InstanceSid}}",
+        "channel": "{{trigger.message.ChannelSid}}",
+        "from": "{{flow.channel.address}}",
+        "message_type": "content_template",
+        "content_sid": "HX5c55e7e3f319e0da5bf820f3112c071c",
+        "timeout": "3600"
+      }
+    },
+    {
+      "name": "check_consent",
+      "type": "split-based-on",
+      "transitions": [
+        {
+          "next": "persist_information_abandoned",
+          "event": "noMatch"
+        },
+        {
+          "next": "gather_name",
+          "event": "match",
+          "conditions": [
+            {
+              "friendly_name": "If value equal_to Proceed",
+              "arguments": [
+                "{{widgets.greeting_confirmation.inbound.Body}}"
+              ],
+              "type": "equal_to",
+              "value": "Proceed"
+            }
+          ]
+        }
+      ],
+      "properties": {
+        "input": "{{widgets.greeting_confirmation.inbound.Body}}",
+        "offset": {
+          "x": 313,
+          "y": -1073
+        }
+      }
+    },
+    {
+      "name": "gather_name",
+      "type": "send-and-wait-for-reply",
+      "transitions": [
+        {
+          "next": "set_name",
+          "event": "incomingMessage"
+        },
+        {
+          "next": "persist_information_abandoned",
+          "event": "timeout"
+        },
+        {
+          "event": "deliveryFailure"
+        }
+      ],
+      "properties": {
+        "offset": {
+          "x": 547,
+          "y": -893
+        },
+        "service": "{{trigger.message.InstanceSid}}",
+        "channel": "{{trigger.message.ChannelSid}}",
+        "from": "{{flow.channel.address}}",
+        "message_type": "custom",
+        "body": "To begin, could you please tell us your full name?",
+        "timeout": "3600"
+      }
+    },
+    {
+      "name": "check_name",
+      "type": "split-based-on",
+      "transitions": [
+        {
+          "event": "noMatch"
+        }
+      ],
+      "properties": {
+        "input": "{{widgets.gather_name.inbound.Body}}",
+        "offset": {
+          "x": 1481,
+          "y": -966
+        }
+      }
+    },
+    {
+      "name": "gather_country",
+      "type": "send-and-wait-for-reply",
+      "transitions": [
+        {
+          "next": "set_country",
+          "event": "incomingMessage"
+        },
+        {
+          "next": "persist_information_abandoned",
+          "event": "timeout"
+        },
+        {
+          "event": "deliveryFailure"
+        }
+      ],
+      "properties": {
+        "offset": {
+          "x": 546,
+          "y": -642
+        },
+        "service": "{{trigger.message.InstanceSid}}",
+        "channel": "{{trigger.message.ChannelSid}}",
+        "from": "{{flow.channel.address}}",
+        "message_type": "content_template",
+        "content_sid": "HX45a96e1988af6c34720d359af8ba0059",
+        "timeout": "3600"
+      }
+    },
+    {
+      "name": "gather_age",
+      "type": "send-and-wait-for-reply",
+      "transitions": [
+        {
+          "next": "set_age",
+          "event": "incomingMessage"
+        },
+        {
+          "next": "persist_information_abandoned",
+          "event": "timeout"
+        },
+        {
+          "event": "deliveryFailure"
+        }
+      ],
+      "properties": {
+        "offset": {
+          "x": 858,
+          "y": -404
+        },
+        "service": "{{trigger.message.InstanceSid}}",
+        "channel": "{{trigger.message.ChannelSid}}",
+        "from": "{{flow.channel.address}}",
+        "message_type": "content_template",
+        "content_sid": "HX36ccf89120c100cc4697cd44ae459e47",
+        "timeout": "3600"
+      }
+    },
+    {
+      "name": "gather_vehicle",
+      "type": "send-and-wait-for-reply",
+      "transitions": [
+        {
+          "next": "set_vehicle",
+          "event": "incomingMessage"
+        },
+        {
+          "next": "persist_information_abandoned",
+          "event": "timeout"
+        },
+        {
+          "event": "deliveryFailure"
+        }
+      ],
+      "properties": {
+        "offset": {
+          "x": 873,
+          "y": -167
+        },
+        "service": "{{trigger.message.InstanceSid}}",
+        "channel": "{{trigger.message.ChannelSid}}",
+        "from": "{{flow.channel.address}}",
+        "message_type": "content_template",
+        "content_sid": "HX1d0644d81485bc8ea3454b0845f876d0",
+        "timeout": "3600"
+      }
+    },
+    {
+      "name": "gather_drivers_license",
+      "type": "send-and-wait-for-reply",
+      "transitions": [
+        {
+          "next": "set_drivers_license",
+          "event": "incomingMessage"
+        },
+        {
+          "next": "persist_information_abandoned",
+          "event": "timeout"
+        },
+        {
+          "event": "deliveryFailure"
+        }
+      ],
+      "properties": {
+        "offset": {
+          "x": 885,
+          "y": 70
+        },
+        "service": "{{trigger.message.InstanceSid}}",
+        "channel": "{{trigger.message.ChannelSid}}",
+        "from": "{{flow.channel.address}}",
+        "message_type": "custom",
+        "body": "Please upload a clear picture of your drivers license",
+        "timeout": "3600"
+      }
+    },
+    {
+      "name": "gather_vehicle_registration_document",
+      "type": "send-and-wait-for-reply",
+      "transitions": [
+        {
+          "next": "set_vehicle_registration",
+          "event": "incomingMessage"
+        },
+        {
+          "next": "persist_information_abandoned",
+          "event": "timeout"
+        },
+        {
+          "event": "deliveryFailure"
+        }
+      ],
+      "properties": {
+        "offset": {
+          "x": 833,
+          "y": 304
+        },
+        "service": "{{trigger.message.InstanceSid}}",
+        "channel": "{{trigger.message.ChannelSid}}",
+        "from": "{{flow.channel.address}}",
+        "message_type": "custom",
+        "body": "Please upload your vehicle registration documents",
+        "timeout": "3600"
+      }
+    },
+    {
+      "name": "journey_complete",
+      "type": "send-message",
+      "transitions": [
+        {
+          "event": "sent"
+        },
+        {
+          "event": "failed"
+        }
+      ],
+      "properties": {
+        "offset": {
+          "x": 959,
+          "y": 717
+        },
+        "service": "{{trigger.message.InstanceSid}}",
+        "channel": "{{trigger.message.ChannelSid}}",
+        "from": "{{flow.channel.address}}",
+        "message_type": "content_template",
+        "to": "{{contact.channel.address}}",
+        "content_sid": "HX127d0a8db91b156cda92be6924aff103"
+      }
+    },
+    {
+      "name": "set_initial_variables",
+      "type": "set-variables",
+      "transitions": [
+        {
+          "next": "greeting_confirmation",
+          "event": "next"
+        }
+      ],
+      "properties": {
+        "variables": [
+          {
+            "type": "string",
+            "value": "{{trigger.message.From | remove: \"whatsapp:\"}}",
+            "key": "phoneNumber"
+          },
+          {
+            "type": "string",
+            "value": "n/a",
+            "key": "name"
+          },
+          {
+            "type": "string",
+            "value": "n/a",
+            "key": "country"
+          },
+          {
+            "type": "string",
+            "value": "n/a",
+            "key": "vehicle"
+          },
+          {
+            "type": "string",
+            "value": "n/a",
+            "key": "above18"
+          },
+          {
+            "type": "string",
+            "value": "n/a",
+            "key": "driversLicense"
+          },
+          {
+            "type": "string",
+            "value": "n/a",
+            "key": "vehicleRegistration"
+          }
+        ],
+        "offset": {
+          "x": -70,
+          "y": -1467
+        }
+      }
+    },
+    {
+      "name": "set_name",
+      "type": "set-variables",
+      "transitions": [
+        {
+          "next": "gather_country",
+          "event": "next"
+        }
+      ],
+      "properties": {
+        "variables": [
+          {
+            "type": "string",
+            "value": "{{widgets.gather_name.inbound.Body}}",
+            "key": "name"
+          }
+        ],
+        "offset": {
+          "x": 1111,
+          "y": -872
+        }
+      }
+    },
+    {
+      "name": "set_country",
+      "type": "set-variables",
+      "transitions": [
+        {
+          "next": "gather_age",
+          "event": "next"
+        }
+      ],
+      "properties": {
+        "variables": [
+          {
+            "type": "string",
+            "value": "Mexico",
+            "key": "country"
+          }
+        ],
+        "offset": {
+          "x": 1108,
+          "y": -616
+        }
+      }
+    },
+    {
+      "name": "set_age",
+      "type": "set-variables",
+      "transitions": [
+        {
+          "next": "gather_vehicle",
+          "event": "next"
+        }
+      ],
+      "properties": {
+        "variables": [
+          {
+            "type": "string",
+            "value": "Yes",
+            "key": "above18"
+          }
+        ],
+        "offset": {
+          "x": 1217,
+          "y": -396
+        }
+      }
+    },
+    {
+      "name": "set_vehicle",
+      "type": "set-variables",
+      "transitions": [
+        {
+          "next": "gather_drivers_license",
+          "event": "next"
+        }
+      ],
+      "properties": {
+        "variables": [
+          {
+            "type": "string",
+            "value": "Yes",
+            "key": "vehicle"
+          }
+        ],
+        "offset": {
+          "x": 1250,
+          "y": -148
+        }
+      }
+    },
+    {
+      "name": "set_drivers_license",
+      "type": "set-variables",
+      "transitions": [
+        {
+          "next": "gather_vehicle_registration_document",
+          "event": "next"
+        }
+      ],
+      "properties": {
+        "variables": [
+          {
+            "type": "string",
+            "value": "https://indrive-studio-helper-9231-dev.twil.io/fetch-media?mediaSid={{widgets.gather_drivers_license.inbound.MediaUrl0 | split: \"/\" | last}}&messageSid={{widgets.gather_drivers_license.inbound.MessageSid}}",
+            "key": "driversLicense"
+          }
+        ],
+        "offset": {
+          "x": 1240,
+          "y": 83
+        }
+      }
+    },
+    {
+      "name": "set_vehicle_registration",
+      "type": "set-variables",
+      "transitions": [
+        {
+          "next": "persist_information",
+          "event": "next"
+        }
+      ],
+      "properties": {
+        "variables": [
+          {
+            "type": "string",
+            "value": "https://indrive-studio-helper-9231-dev.twil.io/fetch-media?mediaSid={{widgets.gather_vehicle_registration_document.inbound.MediaUrl0 | split: \"/\" | last}}&messageSid={{widgets.gather_vehicle_registration_document.inbound.MessageSid}}",
+            "key": "vehicleRegistration"
+          }
+        ],
+        "offset": {
+          "x": 1242,
+          "y": 302
+        }
+      }
+    },
+    {
+      "name": "persist_information",
+      "type": "run-function",
+      "transitions": [
+        {
+          "next": "journey_complete",
+          "event": "success"
+        },
+        {
+          "next": "journey_complete",
+          "event": "fail"
+        }
+      ],
+      "properties": {
+        "service_sid": "ZS779963ab82695df2a4a6aee25f2c985a",
+        "environment_sid": "ZE3c1896786dafa61d47b8be7750cace8d",
+        "offset": {
+          "x": 1295,
+          "y": 577
+        },
+        "function_sid": "ZHc04b2f9562ad085a483fedf30b1d5854",
+        "parameters": [
+          {
+            "value": "{{flow.variables.phoneNumber}}",
+            "key": "phoneNumber"
+          },
+          {
+            "value": "{{flow.variables.name}}",
+            "key": "name"
+          },
+          {
+            "value": "{{flow.variables.country}}",
+            "key": "country"
+          },
+          {
+            "value": "{{flow.variables.above18}}",
+            "key": "above18"
+          },
+          {
+            "value": "{{flow.variables.vehicle}}",
+            "key": "vehicle"
+          },
+          {
+            "value": "{{flow.variables.driversLicense}}",
+            "key": "driversLicense"
+          },
+          {
+            "value": "{{flow.variables.vehicleRegistration}}",
+            "key": "vehicleRegistration"
+          }
+        ],
+        "url": "/persist-event"
+      }
+    },
+    {
+      "name": "persist_information_abandoned",
+      "type": "run-function",
+      "transitions": [
+        {
+          "next": "journey_abandoned_validation",
+          "event": "success"
+        },
+        {
+          "next": "journey_abandoned_validation",
+          "event": "fail"
+        }
+      ],
+      "properties": {
+        "service_sid": "ZS779963ab82695df2a4a6aee25f2c985a",
+        "environment_sid": "ZE3c1896786dafa61d47b8be7750cace8d",
+        "offset": {
+          "x": 1776,
+          "y": -604
+        },
+        "function_sid": "ZHc04b2f9562ad085a483fedf30b1d5854",
+        "parameters": [
+          {
+            "value": "{{flow.variables.phoneNumber}}",
+            "key": "phoneNumber"
+          },
+          {
+            "value": "{{flow.variables.name}}",
+            "key": "name"
+          },
+          {
+            "value": "{{flow.variables.country}}",
+            "key": "country"
+          },
+          {
+            "value": "{{flow.variables.above18}}",
+            "key": "above18"
+          },
+          {
+            "value": "{{flow.variables.vehicle}}",
+            "key": "vehicle"
+          },
+          {
+            "value": "{{flow.variables.driversLicense}}",
+            "key": "driversLicense"
+          },
+          {
+            "value": "{{flow.variables.vehicleRegistration}}",
+            "key": "vehicleRegistration"
+          }
+        ],
+        "url": "/persist-event"
+      }
+    },
+    {
+      "name": "journey_abandoned_validation",
+      "type": "send-message",
+      "transitions": [
+        {
+          "event": "sent"
+        },
+        {
+          "event": "failed"
+        }
+      ],
+      "properties": {
+        "offset": {
+          "x": 2148,
+          "y": -589
+        },
+        "service": "{{trigger.message.InstanceSid}}",
+        "channel": "{{trigger.message.ChannelSid}}",
+        "from": "{{flow.channel.address}}",
+        "message_type": "content_template",
+        "to": "{{contact.channel.address}}",
+        "content_sid": "HX75ff46f9a5f9c23b93fa2dbb165ef641"
+      }
+    }
+  ]
+}
