@@ -1,0 +1,21 @@
+{
+  "name": "indrive-studio-helper",
+  "version": "0.0.0",
+  "private": true,
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "twilio-run",
+    "deploy": "twilio-run deploy"
+  },
+  "dependencies": {
+    "@twilio/runtime-handler": "2.0.3",
+    "axios": "^1.16.0",
+    "twilio": "5.0.3"
+  },
+  "devDependencies": {
+    "twilio-run": "^4.2.0"
+  },
+  "engines": {
+    "node": "22"
+  }
+}
