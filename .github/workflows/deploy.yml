@@ -1,9 +1,7 @@
 name: Deploy Twilio Serverless & Studio
 
 on:
-  push:
-    branches:
-      - main
+  workflow_dispatch:
 
 jobs:
   deploy:
