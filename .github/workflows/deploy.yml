@@ -28,11 +28,11 @@ jobs:
           twilio plugins:install @twilio-labs/plugin-serverless
 
       - name: Install Serverless Dependencies
-        working-directory: ./serverless
+        working-directory: ./serverless/indrive-studio-helper
         run: npm install
 
       - name: Deploy Twilio Serverless
-        working-directory: ./serverless
+        working-directory: ./serverless/indrive-studio-helper
         # Deploys the project and overrides existing functions with the same name
         run: twilio serverless:deploy --override-existing-project
 
