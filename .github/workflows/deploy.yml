@@ -31,6 +31,11 @@ jobs:
         working-directory: ./serverless/indrive-studio-helper
         run: npm install
 
+      - name: Create .env file for Serverless
+        working-directory: ./serverless/indrive-studio-helper
+        run: |
+          echo "GOOGLE_SHEET_ENDPOINT=${{ secrets.GOOGLE_SHEETS_ENDPOINT }}" >> .env
+
       - name: Deploy Twilio Serverless
         working-directory: ./serverless/indrive-studio-helper
         # Deploys the project and overrides existing functions with the same name
