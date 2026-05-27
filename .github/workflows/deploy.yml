@@ -82,6 +82,9 @@ jobs:
       - name: Install deploy script dependencies
         run: npm i
 
+      - name: Install Root Dependencies (Twilio SDK for Studio script)
+        run: npm install twilio
+
       - name: Deploy Studio Flow to ${{ matrix.account }}
         env:
           TWILIO_ACCOUNT_SID_${{ matrix.account }}: ${{ secrets[format('TWILIO_ACCOUNT_SID_{0}', matrix.account)] }}
