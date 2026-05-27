@@ -51,7 +51,7 @@ jobs:
       - name: Create .env file for Serverless
         working-directory: ./serverless/indrive-studio-helper
         run: |
-            echo "GOOGLE_SHEET_ENDPOINT=${{ secrets.GOOGLE_SHEETS_ENDPOINT }}" >> .env
+            echo "GOOGLE_SHEET_ENDPOINT=${{ secrets[format('GOOGLE_SHEET_ENDPOINT_{0}', matrix.account)] }}" >> .env
 
       - name: Deploy Twilio Functions
         working-directory: serverless/indrive-studio-helper
