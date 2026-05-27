@@ -1,6 +1,7 @@
 [
     {
         "alias": "VARUN_DEV",
+        "flowSid":"FW9f65ba88e9c030659cd986676ed29168",
         "flowFriendlyName": "InDrive WA Bot - Varun Dev",
         "serverlessServiceName": "indrive-studio-helper",
         "conversationWidgets":{

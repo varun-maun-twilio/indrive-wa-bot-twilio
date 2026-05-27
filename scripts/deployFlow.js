@@ -46,7 +46,7 @@ async function getServerlessDomain(client, serviceFriendlyName) {
 }
 
 async function deployFlow(accountConfig) {
-  const { alias, flowFriendlyName, serverlessServiceName, conversationWidgets} = accountConfig;
+  const { alias, flowFriendlyName, flowSid, serverlessServiceName, conversationWidgets} = accountConfig;
 
   // Credentials are env vars named by account alias
   const envKey = alias.toUpperCase().replace(/-/g, '_');
@@ -97,30 +97,16 @@ async function deployFlow(accountConfig) {
 
   // ── 3. Upsert: update existing flow or create new ─────────────────────────
   console.log(`[${alias}] Deploying Studio flow "${flowFriendlyName}"...`);
-  const flows = await client.studio.v2.flows.list();
-  const existing = flows.find(f => f.friendlyName === flowFriendlyName);
 
-  /*
-  if (existing) {
-    console.log(`[${alias}] Updating existing flow: ${existing.sid}`);
-    await client.studio.v2.flows(existing.sid).update({
+
+  console.log(`[${alias}] Updating existing flow: ${flowSid}`);
+    await client.studio.v2.flows(flowSid).update({
       commitMessage: `Deploy from GitHub Actions - ${process.env.GITHUB_SHA || 'local'}`,
       friendlyName: flowFriendlyName,
       status: 'published',
       definition: flowDefinition,
     });
-    console.log(`[${alias}] ✓ Flow updated: ${existing.sid}`);
-  } else {
-    console.log(`[${alias}] Creating new flow...`);
-    const newFlow = await client.studio.v2.flows.create({
-      commitMessage: `Initial deploy from GitHub Actions - ${process.env.GITHUB_SHA || 'local'}`,
-      friendlyName: flowFriendlyName,
-      status: 'published',
-      definition: flowDefinition,
-    });
-    console.log(`[${alias}] ✓ Flow created: ${newFlow.sid}`);
-  }
-    */
+    console.log(`[${alias}] ✓ Flow updated: ${flowSid}`);
 }
 
 // ── Entrypoint ────────────────────────────────────────────────────────────────
