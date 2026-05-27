@@ -57,8 +57,6 @@
         "service": "{{trigger.message.InstanceSid}}",
         "channel": "{{trigger.message.ChannelSid}}",
         "from": "{{flow.channel.address}}",
-        "message_type": "content_template",
-        "content_sid": "HX5c55e7e3f319e0da5bf820f3112c071c",
         "timeout": "3600"
       }
     },
@@ -117,8 +115,6 @@
         "service": "{{trigger.message.InstanceSid}}",
         "channel": "{{trigger.message.ChannelSid}}",
         "from": "{{flow.channel.address}}",
-        "message_type": "custom",
-        "body": "To begin, could you please tell us your full name?",
         "timeout": "3600"
       }
     },
@@ -162,8 +158,6 @@
         "service": "{{trigger.message.InstanceSid}}",
         "channel": "{{trigger.message.ChannelSid}}",
         "from": "{{flow.channel.address}}",
-        "message_type": "content_template",
-        "content_sid": "HX45a96e1988af6c34720d359af8ba0059",
         "timeout": "3600"
       }
     },
@@ -191,8 +185,6 @@
         "service": "{{trigger.message.InstanceSid}}",
         "channel": "{{trigger.message.ChannelSid}}",
         "from": "{{flow.channel.address}}",
-        "message_type": "content_template",
-        "content_sid": "HX36ccf89120c100cc4697cd44ae459e47",
         "timeout": "3600"
       }
     },
@@ -220,8 +212,6 @@
         "service": "{{trigger.message.InstanceSid}}",
         "channel": "{{trigger.message.ChannelSid}}",
         "from": "{{flow.channel.address}}",
-        "message_type": "content_template",
-        "content_sid": "HX1d0644d81485bc8ea3454b0845f876d0",
         "timeout": "3600"
       }
     },
@@ -278,8 +268,6 @@
         "service": "{{trigger.message.InstanceSid}}",
         "channel": "{{trigger.message.ChannelSid}}",
         "from": "{{flow.channel.address}}",
-        "message_type": "custom",
-        "body": "Please upload your vehicle registration documents",
         "timeout": "3600"
       }
     },
@@ -302,9 +290,7 @@
         "service": "{{trigger.message.InstanceSid}}",
         "channel": "{{trigger.message.ChannelSid}}",
         "from": "{{flow.channel.address}}",
-        "message_type": "content_template",
-        "to": "{{contact.channel.address}}",
-        "content_sid": "HX127d0a8db91b156cda92be6924aff103"
+        "to": "{{contact.channel.address}}"
       }
     },
     {
@@ -512,13 +498,13 @@
         }
       ],
       "properties": {
-        "service_sid": "ZS779963ab82695df2a4a6aee25f2c985a",
-        "environment_sid": "ZE3c1896786dafa61d47b8be7750cace8d",
+        "service_sid": "{{SERVERLESS_SERVICE_SID}}",
+        "environment_sid": "{{SERVERLESS_ENV_SID}}",
         "offset": {
           "x": 1295,
           "y": 577
         },
-        "function_sid": "ZHc04b2f9562ad085a483fedf30b1d5854",
+        "function_sid": "{{SERVERLESS_FN_PERSIST_SID}}",
         "parameters": [
           {
             "value": "{{flow.variables.phoneNumber}}",
@@ -549,7 +535,7 @@
             "key": "vehicleRegistration"
           }
         ],
-        "url": "/persist-event"
+        "url": "{{SERVERLESS_DOMAIN}}/persist-event"
       }
     },
     {
@@ -566,13 +552,13 @@
         }
       ],
       "properties": {
-        "service_sid": "ZS779963ab82695df2a4a6aee25f2c985a",
-        "environment_sid": "ZE3c1896786dafa61d47b8be7750cace8d",
+        "service_sid": "{{SERVERLESS_SERVICE_SID}}",
+        "environment_sid": "{{SERVERLESS_ENV_SID}}",
         "offset": {
           "x": 1776,
           "y": -604
         },
-        "function_sid": "ZHc04b2f9562ad085a483fedf30b1d5854",
+        "function_sid": "{{SERVERLESS_FN_PERSIST_SID}}",
         "parameters": [
           {
             "value": "{{flow.variables.phoneNumber}}",
@@ -603,7 +589,7 @@
             "key": "vehicleRegistration"
           }
         ],
-        "url": "/persist-event"
+        "url": "{{SERVERLESS_DOMAIN}}/persist-event"
       }
     },
     {
@@ -625,9 +611,7 @@
         "service": "{{trigger.message.InstanceSid}}",
         "channel": "{{trigger.message.ChannelSid}}",
         "from": "{{flow.channel.address}}",
-        "message_type": "content_template",
-        "to": "{{contact.channel.address}}",
-        "content_sid": "HX75ff46f9a5f9c23b93fa2dbb165ef641"
+        "to": "{{contact.channel.address}}"
       }
     }
   ]

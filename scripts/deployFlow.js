@@ -36,11 +36,11 @@ async function getServerlessDomain(client, serviceFriendlyName) {
     `  Domain             : ${prodEnv.domainName}`
   );
 
-  return prodEnv.domainName; // e.g. "indrive-wa-bot-1234-prod.twil.io"
+  return {serverlessDomain: prodEnv.domainName};
 }
 
 async function deployFlow(accountConfig) {
-  const { alias, flowFriendlyName, serverlessServiceName, backendUrl, whatsappNumber } = accountConfig;
+  const { alias, flowFriendlyName, serverlessServiceName, conversationWidgets} = accountConfig;
 
   // Credentials are env vars named by account alias
   const envKey = alias.toUpperCase().replace(/-/g, '_');
@@ -55,25 +55,46 @@ async function deployFlow(accountConfig) {
 
   // ── 1. Resolve the serverless domain for this account ─────────────────────
   console.log(`[${alias}] Resolving serverless domain for "${serverlessServiceName}"...`);
-  const serverlessDomain = await getServerlessDomain(client, serverlessServiceName);
+  const {serverlessDomain} = await getServerlessDomain(client, serverlessServiceName);
 
   // ── 2. Load template and substitute all placeholders ──────────────────────
   let flowJson = fs.readFileSync(
-    path.join(__dirname, '../studio/flow.template.json'), 'utf8'
+    path.join(__dirname, '../studio/flow-template.json'), 'utf8'
   );
 
   flowJson = flowJson
     .replace(/{{SERVERLESS_DOMAIN}}/g, serverlessDomain)     // e.g. used in run-function widget URLs
-    .replace(/{{BACKEND_URL}}/g, backendUrl)
-    .replace(/{{WHATSAPP_NUMBER}}/g, whatsappNumber);
+    .replace(/{{SERVERLESS_SERVICE_SID}}/g, "TEST3")
+    .replace(/{{SERVERLESS_ENV_SID}}/g, "TEST4")
+    .replace(/{{SERVERLESS_FN_PERSIST_SID}}/g, "TEST2");
 
   const flowDefinition = JSON.parse(flowJson);
+
+  for(const widgetName of Object.keys(conversationWidgets)) {
+    const widget = flowDefinition.states.find(s => s.name === widgetName);
+    if (widget) {
+        if(conversationWidgets[widgetName].contentTemplateSid){
+           widget.properties.message_type = "content_template";
+           widget.properties.content_sid = conversationWidgets[widgetName].contentTemplateSid;
+           console.log(`Updated widget "${widgetName}" with content template SID: ${conversationWidgets[widgetName].contentTemplateSid}`);
+        }
+        else{
+              widget.properties.message_type = "custom";
+              widget.properties.body = conversationWidgets[widgetName].body;
+              console.log(`Updated widget "${widgetName}" with custom message body: ${conversationWidgets[widgetName].body}`);
+        }
+        
+    }
+    }
+
+    console.log(`[${alias}] Final flow definition:`, JSON.stringify(flowDefinition, null, 2));
 
   // ── 3. Upsert: update existing flow or create new ─────────────────────────
   console.log(`[${alias}] Deploying Studio flow "${flowFriendlyName}"...`);
   const flows = await client.studio.v2.flows.list();
   const existing = flows.find(f => f.friendlyName === flowFriendlyName);
 
+  /*
   if (existing) {
     console.log(`[${alias}] Updating existing flow: ${existing.sid}`);
     await client.studio.v2.flows(existing.sid).update({
@@ -93,6 +114,7 @@ async function deployFlow(accountConfig) {
     });
     console.log(`[${alias}] ✓ Flow created: ${newFlow.sid}`);
   }
+    */
 }
 
 // ── Entrypoint ────────────────────────────────────────────────────────────────

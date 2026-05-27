@@ -2,15 +2,40 @@
     {
         "alias": "VARUN_DEV",
         "flowFriendlyName": "InDrive WA Bot - Varun Dev",
-        "serverlessServiceName": "indrive-wa-bot",
-        "contentTemplateSids": {
-            "greeting_confirmation": "HX5c55e7e3f319e0da5bf820f3112c071c",
-            "gather_name": "",
-            "gather_country": "HX45a96e1988af6c34720d359af8ba0059",
-            "gather_age": "HX36ccf89120c100cc4697cd44ae459e47",
-            "gather_vehicle": "HX1d0644d81485bc8ea3454b0845f876d0",
-            "gather_drivers_license": "",
-            "gather_vehicle_registration_document": ""
+        "serverlessServiceName": "indrive-studio-helper",
+        "conversationWidgets":{
+            "greeting_confirmation":{
+                "contentTemplateSid": "HX5c55e7e3f319e0da5bf820f3112c071c",
+                "body":"Welcome to the inDrive family! We're so excited you've decided to drive with us. Let's get you onboarded—we just need a few quick details from you to get started. Enter Proceed to continue."
+            },
+            "gather_name":{
+                "body":"To begin, could you please tell us your full name?"
+            },
+            "gather_country":{
+                "contentTemplateSid": "HX45a96e1988af6c34720d359af8ba0059",
+                "body":"Can you please confirm if you are based in Mexico 🇲🇽 ?"
+            },
+            "gather_age":{
+                "contentTemplateSid": "HX36ccf89120c100cc4697cd44ae459e47",
+                "body":"Are you above 18 years of age ?"
+            },
+            "gather_vehicle":{
+                "contentTemplateSid": "HX1d0644d81485bc8ea3454b0845f876d0",
+                "body":"Do you own a car ?"
+            },
+            "gather_drivers_license":{
+                "body":"Please upload a clear picture of your drivers license"
+            },
+            "gather_vehicle_registration_document":{
+                "body":"Please upload a clear picture of your vehicle registration document"
+            },
+            "journey_complete":{
+                "body":"Your driver application is under review! Want to start earning the second you're approved? Download the app now to get a head start! https://indrive.com/"
+            },
+            "journey_abandoned_validation":{
+                "body":"You're so close to earning! 🚗 Finish your driver application in minutes right from your phone. Download the app to complete your setup and hit the road"
+            }
+
         }
     }
 ]
