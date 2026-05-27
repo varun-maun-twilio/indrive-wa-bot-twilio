@@ -23,6 +23,7 @@ async function getServerlessDomain(client, serviceFriendlyName) {
   const environments = await client.serverless.v1
     .services(service.sid)
     .environments.list();
+  
 
   const prodEnv = environments.find(e => e.uniqueName === 'production') || environments[0];
 
@@ -30,13 +31,18 @@ async function getServerlessDomain(client, serviceFriendlyName) {
     throw new Error(`No environments found for service "${serviceFriendlyName}"`);
   }
 
+
+  //Fetch all functions
+    const functionsList = await client.serverless.v1.services(service.sid).functions.list();
+    const persistFunctionSid = functionsList.find(f => f.friendlyName === '/persist-event')?.sid;
+
   console.log(
     `  Serverless service : ${service.sid} (${service.friendlyName})\n` +
     `  Environment        : ${prodEnv.uniqueName}\n` +
     `  Domain             : ${prodEnv.domainName}`
   );
 
-  return {serverlessDomain: prodEnv.domainName};
+  return {serverlessService: service.sid, serverlessEnvSid: prodEnv.sid, serverlessDomain: prodEnv.domainName, persistFunctionSid: persistFunctionSid};
 }
 
 async function deployFlow(accountConfig) {
@@ -55,7 +61,7 @@ async function deployFlow(accountConfig) {
 
   // ── 1. Resolve the serverless domain for this account ─────────────────────
   console.log(`[${alias}] Resolving serverless domain for "${serverlessServiceName}"...`);
-  const {serverlessDomain} = await getServerlessDomain(client, serverlessServiceName);
+  const {serverlessService, serverlessEnvSid, serverlessDomain, persistFunctionSid} = await getServerlessDomain(client, serverlessServiceName);
 
   // ── 2. Load template and substitute all placeholders ──────────────────────
   let flowJson = fs.readFileSync(
@@ -63,10 +69,10 @@ async function deployFlow(accountConfig) {
   );
 
   flowJson = flowJson
-    .replace(/{{SERVERLESS_DOMAIN}}/g, serverlessDomain)     // e.g. used in run-function widget URLs
-    .replace(/{{SERVERLESS_SERVICE_SID}}/g, "TEST3")
-    .replace(/{{SERVERLESS_ENV_SID}}/g, "TEST4")
-    .replace(/{{SERVERLESS_FN_PERSIST_SID}}/g, "TEST2");
+    .replace(/{{SERVERLESS_DOMAIN}}/g, `https://${serverlessDomain}`)     // e.g. used in run-function widget URLs
+    .replace(/{{SERVERLESS_SERVICE_SID}}/g, serverlessService)
+    .replace(/{{SERVERLESS_ENV_SID}}/g, serverlessEnvSid)
+    .replace(/{{SERVERLESS_FN_PERSIST_SID}}/g, persistFunctionSid);
 
   const flowDefinition = JSON.parse(flowJson);
 
