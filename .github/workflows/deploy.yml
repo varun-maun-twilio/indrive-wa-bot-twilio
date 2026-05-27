@@ -1,48 +1,86 @@
-name: Deploy Twilio Serverless & Studio
+name: Deploy InDrive WA Bot
 
 on:
+  push:
+    branches: [main]
   workflow_dispatch:
+    inputs:
+      account_alias:
+        description: 'Deploy to specific account only (leave empty for all)'
+        required: false
 
 jobs:
-  deploy:
+  # ── Step 1: Read account list and build matrix ──────────────────────────────
+  setup:
     runs-on: ubuntu-latest
-    env:
-      # Twilio CLI and SDK will automatically use these environment variables
-      TWILIO_ACCOUNT_SID: ${{ secrets.TWILIO_ACCOUNT_SID }}
-      TWILIO_AUTH_TOKEN: ${{ secrets.TWILIO_AUTH_TOKEN }}
-      STUDIO_FLOW_SID: ${{ secrets.STUDIO_FLOW_SID }}
-      SERVICE_NAME: 'indrive-studio-helper' 
-
+    outputs:
+      matrix: ${{ steps.set-matrix.outputs.matrix }}
     steps:
-      - name: Checkout Code
-        uses: actions/checkout@v4
+      - uses: actions/checkout@v4
+      - name: Build account matrix
+        id: set-matrix
+        run: |
+          if [ -n "${{ github.event.inputs.account_alias }}" ]; then
+            # Single-account targeted deploy
+            MATRIX=$(echo '["${{ github.event.inputs.account_alias }}"]')
+          else
+            # All accounts
+            MATRIX=$(cat config/accounts.json | jq -c '[.[].alias]')
+          fi
+          echo "matrix=$MATRIX" >> $GITHUB_OUTPUT
 
-      - name: Setup Node.js
-        uses: actions/setup-node@v4
+  # ── Step 2: Deploy Functions (parallel per account) ─────────────────────────
+  deploy-functions:
+    needs: setup
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        account: ${{ fromJson(needs.setup.outputs.matrix) }}
+      fail-fast: false          # Don't stop other accounts if one fails
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
         with:
           node-version: '22'
+          cache: 'npm'
+          cache-dependency-path: serverless/indrive-studio-helper/package-lock.json
 
-      - name: Install Twilio CLI and Serverless Plugin
-        run: |
-          npm install -g twilio-cli
-          twilio plugins:install @twilio-labs/plugin-serverless
-
-      - name: Install Serverless Dependencies
-        working-directory: ./serverless/indrive-studio-helper
-        run: npm install
+      - name: Install dependencies
+        run: npm ci --prefix serverless
 
       - name: Create .env file for Serverless
         working-directory: ./serverless/indrive-studio-helper
         run: |
-          echo "GOOGLE_SHEET_ENDPOINT=${{ secrets.GOOGLE_SHEETS_ENDPOINT }}" >> .env
+            echo "GOOGLE_SHEET_ENDPOINT=${{ secrets.GOOGLE_SHEETS_ENDPOINT }}" >> .env
 
-      - name: Deploy Twilio Serverless
-        working-directory: ./serverless/indrive-studio-helper
-        # Deploys the project and overrides existing functions with the same name
+      - name: Deploy Twilio Functions
+        working-directory: serverless/indrive-studio-helper
+        env:
+          TWILIO_ACCOUNT_SID: ${{ secrets[format('TWILIO_ACCOUNT_SID_{0}', matrix.account)] }}
+          TWILIO_AUTH_TOKEN:  ${{ secrets[format('TWILIO_AUTH_TOKEN_{0}', matrix.account)] }}
         run: twilio serverless:deploy --override-existing-project
 
-      - name: Install Root Dependencies (Twilio SDK for Studio script)
-        run: npm install twilio
+  # ── Step 3: Deploy Studio Flow (after functions, parallel per account) ───────
+  deploy-studio:
+    needs: [setup, deploy-functions]
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        account: ${{ fromJson(needs.setup.outputs.matrix) }}
+      fail-fast: false
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: 'npm'
 
-      - name: Update and Publish Twilio Studio Flow
-        run: node studio/deploy-studio.js
+      - name: Install deploy script dependencies
+        run: npm ci
+
+      - name: Deploy Studio Flow to ${{ matrix.account }}
+        env:
+          TWILIO_ACCOUNT_SID_${{ matrix.account }}: ${{ secrets[format('TWILIO_ACCOUNT_SID_{0}', matrix.account)] }}
+          TWILIO_AUTH_TOKEN_${{ matrix.account }}:  ${{ secrets[format('TWILIO_AUTH_TOKEN_{0}', matrix.account)] }}
+          GITHUB_SHA: ${{ github.sha }}
+        run: node scripts/deployFlow.js ${{ matrix.account }}

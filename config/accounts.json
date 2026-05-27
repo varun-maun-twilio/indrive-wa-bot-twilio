@@ -1,0 +1,15 @@
+[
+    {
+        "alias": "VARUN_DEV",
+        "flowFriendlyName": "InDrive WA Bot - Varun Dev",
+        "serverlessServiceName": "indrive-wa-bot",
+        "contentTemplateSids": {
+            "greeting_confirmation": "HX5c55e7e3f319e0da5bf820f3112c071c",
+            "gather_name": "",
+            "gather_country": "HX45a96e1988af6c34720d359af8ba0059",
+            "gather_age": "HX36ccf89120c100cc4697cd44ae459e47",
+            "gather_vehicle": "HX1d0644d81485bc8ea3454b0845f876d0",
+            "gather_drivers_license": "",
+            "gather_vehicle_registration_document": ""
+        }
+    ]
