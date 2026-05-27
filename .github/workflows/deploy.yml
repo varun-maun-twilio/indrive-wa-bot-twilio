@@ -45,6 +45,11 @@ jobs:
           cache: 'npm'
           cache-dependency-path: serverless/indrive-studio-helper/package-lock.json
 
+      - name: Install Twilio CLI and Serverless Plugin
+        run: |
+          npm install -g twilio-cli
+          twilio plugins:install @twilio-labs/plugin-serverless
+
       - name: Install dependencies
         run: npm ci --prefix serverless/indrive-studio-helper
 
